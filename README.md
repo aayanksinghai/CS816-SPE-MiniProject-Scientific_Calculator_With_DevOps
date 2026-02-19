@@ -9,56 +9,63 @@ A simple Java-based GUI calculator application with basic arithmetic operations 
 - **Error Handling**: Division by zero protection
 - **Unit Testing**: Comprehensive JUnit test cases
 
-## Files
+## Project Structure
 
-- `Calculator.java` - Main GUI application
-- `CalculatorLogic.java` - Core calculation logic
-- `CalculatorLogicTest.java` - JUnit test cases
-- `build.xml` - Ant build file for compilation and testing
+```
+CS816-SPE-MiniProject-Scientific_Calculator_With_DevOps/
+├── pom.xml                                    # Maven build configuration
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       └── com/
+│   │           └── calculator/
+│   │               ├── Calculator.java        # Main GUI application
+│   │               └── CalculatorLogic.java   # Core calculation logic
+│   └── test/
+│       └── java/
+│           └── com/
+│               └── calculator/
+│                   └── CalculatorLogicTest.java  # JUnit test cases
+├── README.md
+└── LICENSE
+```
 
 ## How to Run
 
 ### Prerequisites
-- Java JDK 8 or higher
-- Apache Ant (optional, for using build.xml)
+- Java JDK 11 or higher
+- Apache Maven 3.6+
 
-### Method 1: Using Ant (Recommended)
+### Using Maven (Recommended)
 
 1. **Compile the code:**
    ```bash
-   ant compile
+   mvn compile
    ```
 
 2. **Run tests:**
    ```bash
-   ant test
+   mvn test
    ```
 
-3. **Run the application:**
+3. **Package the application:**
    ```bash
-   ant run
+   mvn package
    ```
 
-4. **Create JAR file:**
+4. **Run the application:**
    ```bash
-   ant jar
+   mvn exec:java -Dexec.mainClass="com.calculator.Calculator"
+   ```
+   
+   Or after packaging:
+   ```bash
+   java -jar target/scientific-calculator-1.0-SNAPSHOT.jar
    ```
 
-### Method 2: Manual Compilation
-
-1. **Compile the files:**
+5. **Clean and rebuild:**
    ```bash
-   javac *.java
-   ```
-
-2. **Run the calculator:**
-   ```bash
-   java Calculator
-   ```
-
-3. **Run tests (requires JUnit):**
-   ```bash
-   java -cp .:junit-4.13.2.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore CalculatorLogicTest
+   mvn clean install
    ```
 
 ## Usage

@@ -1,8 +1,13 @@
+package com.calculator;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Main Calculator GUI class with modern UI design.
+ */
 public class Calculator extends JFrame implements ActionListener {
     private JTextField display;
     private JLabel expressionDisplay;
@@ -13,6 +18,7 @@ public class Calculator extends JFrame implements ActionListener {
     private StringBuilder expression = new StringBuilder();
     private StringBuilder currentNumber = new StringBuilder();
     private CalculatorLogic logic = new CalculatorLogic();
+    private boolean isErrorState = false;
 
     // Color scheme
     private static final Color BACKGROUND_COLOR = new Color(45, 45, 48);
@@ -92,7 +98,7 @@ public class Calculator extends JFrame implements ActionListener {
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setOpaque(true);
-        
+
         // Set button colors based on type
         if (label.equals("=")) {
             button.setBackground(EQUALS_COLOR);
@@ -105,7 +111,7 @@ public class Calculator extends JFrame implements ActionListener {
         } else {
             button.setBackground(BUTTON_COLOR);
         }
-        
+
         // Add hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -123,7 +129,7 @@ public class Calculator extends JFrame implements ActionListener {
                 }
             }
         });
-        
+
         button.addActionListener(this);
         return button;
     }
@@ -131,6 +137,11 @@ public class Calculator extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
+
+        // If in error state, only allow C button
+        if (isErrorState && !command.equals("C")) {
+            return;
+        }
 
         if (command.charAt(0) >= '0' && command.charAt(0) <= '9' || command.equals(".")) {
             System.out.println("DEBUG: Digit pressed: " + command + ", isNewNumber=" + isNewNumber + ", currentNumber before=" + currentNumber.toString());
@@ -151,16 +162,24 @@ public class Calculator extends JFrame implements ActionListener {
             secondNumber = 0;
             operator = "";
             isNewNumber = true;
+            // Reset error state and restore display color
+            if (isErrorState) {
+                isErrorState = false;
+                display.setForeground(DISPLAY_TEXT_COLOR);
+            }
         } else if (command.equals("⌫")) {
             handleBackspace();
         } else if (command.equals("=")) {
             if (!operator.isEmpty() && currentNumber.length() > 0) {
                 secondNumber = Double.parseDouble(currentNumber.toString());
                 double result = calculate();
-                expression.setLength(0);
-                expression.append(formatResult(firstNumber)).append(" ").append(operator).append(" ").append(formatResult(secondNumber)).append(" = ");
-                expressionDisplay.setText(expression.toString());
-                display.setText(formatResult(result));
+                // Only update display if not in error state (error is handled in calculate())
+                if (!isErrorState) {
+                    expression.setLength(0);
+                    expression.append(formatResult(firstNumber)).append(" ").append(operator).append(" ").append(formatResult(secondNumber)).append(" = ");
+                    expressionDisplay.setText(expression.toString());
+                    display.setText(formatResult(result));
+                }
                 operator = "";
                 isNewNumber = true;
                 currentNumber.setLength(0);
@@ -240,7 +259,11 @@ public class Calculator extends JFrame implements ActionListener {
                     return 0;
             }
         } catch (ArithmeticException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            // Set error state and display error message in red
+            isErrorState = true;
+            display.setForeground(Color.RED);
+            display.setText("Can't divide by 0");
+            expressionDisplay.setText("");
             return 0;
         }
     }
@@ -252,3 +275,4 @@ public class Calculator extends JFrame implements ActionListener {
         });
     }
 }
+
