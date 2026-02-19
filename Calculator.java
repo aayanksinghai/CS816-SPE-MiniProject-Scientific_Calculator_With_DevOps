@@ -5,10 +5,13 @@ import java.awt.event.ActionListener;
 
 public class Calculator extends JFrame implements ActionListener {
     private JTextField display;
+    private JLabel expressionDisplay;
     private double firstNumber = 0;
     private double secondNumber = 0;
     private String operator = "";
     private boolean isNewNumber = true;
+    private StringBuilder expression = new StringBuilder();
+    private StringBuilder currentNumber = new StringBuilder();
     private CalculatorLogic logic = new CalculatorLogic();
 
     // Color scheme
@@ -23,11 +26,22 @@ public class Calculator extends JFrame implements ActionListener {
 
     public Calculator() {
         setTitle("Modern Calculator");
-        setSize(350, 450);
+        setSize(350, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
         setLocationRelativeTo(null);
         getContentPane().setBackground(BACKGROUND_COLOR);
+
+        JPanel displayPanel = new JPanel();
+        displayPanel.setLayout(new BorderLayout());
+        displayPanel.setBackground(DISPLAY_COLOR);
+        displayPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        expressionDisplay = new JLabel("");
+        expressionDisplay.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        expressionDisplay.setHorizontalAlignment(JLabel.RIGHT);
+        expressionDisplay.setForeground(new Color(180, 180, 180));
+        displayPanel.add(expressionDisplay, BorderLayout.NORTH);
 
         display = new JTextField();
         display.setFont(new Font("Segoe UI", Font.BOLD, 32));
@@ -35,44 +49,40 @@ public class Calculator extends JFrame implements ActionListener {
         display.setEditable(false);
         display.setBackground(DISPLAY_COLOR);
         display.setForeground(DISPLAY_TEXT_COLOR);
-        display.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        display.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         display.setOpaque(true);
-        add(display, BorderLayout.NORTH);
+        displayPanel.add(display, BorderLayout.CENTER);
+
+        add(displayPanel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(4, 4, 8, 8));
+        buttonPanel.setLayout(new GridLayout(5, 4, 8, 8));
         buttonPanel.setBackground(BACKGROUND_COLOR);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         String[] buttonLabels = {
-            "7", "8", "9", "/",
-            "4", "5", "6", "*",
-            "1", "2", "3", "-",
-            "0", ".", "=", "+"
+            "C", "⌫", "/", "*",
+            "7", "8", "9", "-",
+            "4", "5", "6", "+",
+            "1", "2", "3", "=",
+            "0", ".", "", ""
         };
 
         for (String label : buttonLabels) {
+            if (label.isEmpty()) {
+                JPanel emptyPanel = new JPanel();
+                emptyPanel.setBackground(BACKGROUND_COLOR);
+                buttonPanel.add(emptyPanel);
+                continue;
+            }
             JButton button = createButton(label);
+            if (label.equals("C")) {
+                button.setBackground(CLEAR_COLOR);
+            }
             buttonPanel.add(button);
         }
 
-        JPanel clearPanel = new JPanel();
-        clearPanel.setLayout(new BorderLayout());
-        clearPanel.setBackground(BACKGROUND_COLOR);
-        clearPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        
-        JButton clearButton = createButton("C");
-        clearButton.setBackground(CLEAR_COLOR);
-        clearPanel.add(clearButton, BorderLayout.CENTER);
-
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.setBackground(BACKGROUND_COLOR);
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
-        mainPanel.add(clearPanel, BorderLayout.SOUTH);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        add(mainPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.CENTER);
     }
 
     private JButton createButton(String label) {
@@ -88,6 +98,10 @@ public class Calculator extends JFrame implements ActionListener {
             button.setBackground(EQUALS_COLOR);
         } else if (label.matches("[+\\-*/]")) {
             button.setBackground(OPERATOR_COLOR);
+        } else if (label.equals("⌫")) {
+            button.setBackground(BUTTON_COLOR);
+        } else if (label.equals("C")) {
+            button.setBackground(CLEAR_COLOR);
         } else {
             button.setBackground(BUTTON_COLOR);
         }
@@ -119,37 +133,95 @@ public class Calculator extends JFrame implements ActionListener {
         String command = e.getActionCommand();
 
         if (command.charAt(0) >= '0' && command.charAt(0) <= '9' || command.equals(".")) {
+            System.out.println("DEBUG: Digit pressed: " + command + ", isNewNumber=" + isNewNumber + ", currentNumber before=" + currentNumber.toString());
             if (isNewNumber) {
-                display.setText(command);
+                currentNumber.setLength(0);
                 isNewNumber = false;
-            } else {
-                display.setText(display.getText() + command);
             }
+            currentNumber.append(command);
+            display.setText(currentNumber.toString());
+            System.out.println("DEBUG: After processing, currentNumber=" + currentNumber.toString() + ", display=" + display.getText());
+            updateExpression();
         } else if (command.equals("C")) {
             display.setText("");
+            expression.setLength(0);
+            currentNumber.setLength(0);
+            expressionDisplay.setText("");
             firstNumber = 0;
             secondNumber = 0;
             operator = "";
             isNewNumber = true;
+        } else if (command.equals("⌫")) {
+            handleBackspace();
         } else if (command.equals("=")) {
-            if (!operator.isEmpty()) {
-                secondNumber = Double.parseDouble(display.getText());
+            if (!operator.isEmpty() && currentNumber.length() > 0) {
+                secondNumber = Double.parseDouble(currentNumber.toString());
                 double result = calculate();
-                display.setText(String.valueOf(result));
+                expression.setLength(0);
+                expression.append(formatResult(firstNumber)).append(" ").append(operator).append(" ").append(formatResult(secondNumber)).append(" = ");
+                expressionDisplay.setText(expression.toString());
+                display.setText(formatResult(result));
                 operator = "";
                 isNewNumber = true;
+                currentNumber.setLength(0);
+                expression.setLength(0);
             }
         } else {
-            if (!operator.isEmpty()) {
-                secondNumber = Double.parseDouble(display.getText());
-                double result = calculate();
-                display.setText(String.valueOf(result));
-                firstNumber = result;
-            } else {
-                firstNumber = Double.parseDouble(display.getText());
+            // Operator buttons (+, -, *, /)
+            if (currentNumber.length() > 0 || !isNewNumber) {
+                if (!operator.isEmpty() && !isNewNumber) {
+                    // Chain calculations
+                    secondNumber = Double.parseDouble(currentNumber.toString());
+                    double result = calculate();
+                    firstNumber = result;
+                    display.setText(formatResult(result));
+                } else {
+                    firstNumber = Double.parseDouble(currentNumber.toString());
+                }
+                operator = command;
+                isNewNumber = true;
+                currentNumber.setLength(0);
+                expression.setLength(0);
+                expression.append(formatResult(firstNumber)).append(" ").append(operator).append(" ");
+                expressionDisplay.setText(expression.toString());
             }
-            operator = command;
-            isNewNumber = true;
+        }
+    }
+
+    private void updateExpression() {
+        System.out.println("DEBUG updateExpression: operator='" + operator + "', firstNumber=" + firstNumber + ", currentNumber=" + currentNumber);
+        if (!operator.isEmpty()) {
+            expression.setLength(0);
+            expression.append(formatResult(firstNumber)).append(" ").append(operator).append(" ").append(currentNumber);
+            System.out.println("DEBUG: Setting expression display to: " + expression.toString());
+            expressionDisplay.setText(expression.toString());
+        }
+    }
+
+    private void handleBackspace() {
+        if (currentNumber.length() > 0) {
+            // Remove last character from current number
+            currentNumber.setLength(currentNumber.length() - 1);
+            display.setText(currentNumber.toString());
+            // Update expression if operator is set
+            updateExpression();
+        }
+        // If current number is empty and we have an operator, clear the operator
+        if (currentNumber.length() == 0 && !operator.isEmpty()) {
+            operator = "";
+            expression.setLength(0);
+            expressionDisplay.setText("");
+            isNewNumber = false;
+            currentNumber.append(firstNumber);
+            display.setText(currentNumber.toString());
+        }
+    }
+
+    private String formatResult(double result) {
+        if (result == (long) result) {
+            return String.valueOf((long) result);
+        } else {
+            return String.format("%.8f", result).replaceAll("0+$", "").replaceAll("\\.$", "");
         }
     }
 
