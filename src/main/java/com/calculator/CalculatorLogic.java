@@ -23,5 +23,35 @@ public class CalculatorLogic {
         }
         return a / b;
     }
+
+    public double squareRoot(double a) {
+        if (a < 0) {
+            throw new ArithmeticException("Cannot calculate square root of negative number");
+        }
+        return Math.sqrt(a);
+    }
+
+    public double factorial(double a) {
+        if (a < 0) {
+            throw new ArithmeticException("Cannot calculate factorial of negative number");
+        }
+        if (a != Math.floor(a)) {
+            throw new ArithmeticException("Cannot calculate factorial of non-integer");
+        }
+        if (a > 170) {
+            throw new ArithmeticException("Number too large for factorial");
+        }
+
+        long n = (long) a;
+        if (n == 0 || n == 1) {
+            return 1;
+        }
+
+        double result = 1;
+        for (long i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
 }
 

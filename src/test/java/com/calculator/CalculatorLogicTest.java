@@ -56,5 +56,40 @@ public class CalculatorLogicTest {
         assertEquals(0.0, calculator.multiply(5.0, 0.0), 0.001);
         assertEquals(0.0, calculator.divide(0.0, 5.0), 0.001);
     }
+
+    @Test
+    public void testSquareRoot() {
+        assertEquals(2.0, calculator.squareRoot(4.0), 0.001);
+        assertEquals(3.0, calculator.squareRoot(9.0), 0.001);
+        assertEquals(5.0, calculator.squareRoot(25.0), 0.001);
+        assertEquals(0.0, calculator.squareRoot(0.0), 0.001);
+        assertEquals(1.4142, calculator.squareRoot(2.0), 0.001);
+    }
+
+    @Test(expected = ArithmeticException.class)
+    public void testSquareRootNegative() {
+        calculator.squareRoot(-4.0);
+    }
+
+    @Test
+    public void testFactorial() {
+        assertEquals(1.0, calculator.factorial(0.0), 0.001);
+        assertEquals(1.0, calculator.factorial(1.0), 0.001);
+        assertEquals(2.0, calculator.factorial(2.0), 0.001);
+        assertEquals(6.0, calculator.factorial(3.0), 0.001);
+        assertEquals(24.0, calculator.factorial(4.0), 0.001);
+        assertEquals(120.0, calculator.factorial(5.0), 0.001);
+        assertEquals(3628800.0, calculator.factorial(10.0), 0.001);
+    }
+
+    @Test(expected = ArithmeticException.class)
+    public void testFactorialNegative() {
+        calculator.factorial(-5.0);
+    }
+
+    @Test(expected = ArithmeticException.class)
+    public void testFactorialNonInteger() {
+        calculator.factorial(3.5);
+    }
 }
 

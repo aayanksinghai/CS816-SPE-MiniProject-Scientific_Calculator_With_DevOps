@@ -27,6 +27,7 @@ public class Calculator extends JFrame implements ActionListener {
     private static final Color OPERATOR_COLOR = new Color(255, 149, 0);
     private static final Color EQUALS_COLOR = new Color(255, 149, 0);
     private static final Color CLEAR_COLOR = new Color(200, 70, 70);
+    private static final Color SCIENTIFIC_COLOR = new Color(100, 149, 237);
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final Color DISPLAY_TEXT_COLOR = Color.WHITE;
 
@@ -71,16 +72,10 @@ public class Calculator extends JFrame implements ActionListener {
             "7", "8", "9", "-",
             "4", "5", "6", "+",
             "1", "2", "3", "=",
-            "0", ".", "", ""
+            "0", ".", "√", "n!"
         };
 
         for (String label : buttonLabels) {
-            if (label.isEmpty()) {
-                JPanel emptyPanel = new JPanel();
-                emptyPanel.setBackground(BACKGROUND_COLOR);
-                buttonPanel.add(emptyPanel);
-                continue;
-            }
             JButton button = createButton(label);
             if (label.equals("C")) {
                 button.setBackground(CLEAR_COLOR);
@@ -108,6 +103,8 @@ public class Calculator extends JFrame implements ActionListener {
             button.setBackground(BUTTON_COLOR);
         } else if (label.equals("C")) {
             button.setBackground(CLEAR_COLOR);
+        } else if (label.equals("√") || label.equals("n!")) {
+            button.setBackground(SCIENTIFIC_COLOR);
         } else {
             button.setBackground(BUTTON_COLOR);
         }
@@ -124,6 +121,8 @@ public class Calculator extends JFrame implements ActionListener {
                     button.setBackground(OPERATOR_COLOR);
                 } else if (label.equals("C")) {
                     button.setBackground(CLEAR_COLOR);
+                } else if (label.equals("√") || label.equals("n!")) {
+                    button.setBackground(SCIENTIFIC_COLOR);
                 } else {
                     button.setBackground(BUTTON_COLOR);
                 }
@@ -169,6 +168,10 @@ public class Calculator extends JFrame implements ActionListener {
             }
         } else if (command.equals("⌫")) {
             handleBackspace();
+        } else if (command.equals("√")) {
+            handleSquareRoot();
+        } else if (command.equals("n!")) {
+            handleFactorial();
         } else if (command.equals("=")) {
             if (!operator.isEmpty() && currentNumber.length() > 0) {
                 secondNumber = Double.parseDouble(currentNumber.toString());
@@ -214,6 +217,44 @@ public class Calculator extends JFrame implements ActionListener {
             expression.append(formatResult(firstNumber)).append(" ").append(operator).append(" ").append(currentNumber);
             System.out.println("DEBUG: Setting expression display to: " + expression.toString());
             expressionDisplay.setText(expression.toString());
+        }
+    }
+
+    private void handleSquareRoot() {
+        if (currentNumber.length() > 0) {
+            try {
+                double num = Double.parseDouble(currentNumber.toString());
+                double result = logic.squareRoot(num);
+                expressionDisplay.setText("√(" + formatResult(num) + ") =");
+                display.setText(formatResult(result));
+                currentNumber.setLength(0);
+                currentNumber.append(formatResult(result));
+                isNewNumber = true;
+            } catch (ArithmeticException e) {
+                isErrorState = true;
+                display.setForeground(Color.RED);
+                display.setText("Invalid input for √");
+                expressionDisplay.setText("");
+            }
+        }
+    }
+
+    private void handleFactorial() {
+        if (currentNumber.length() > 0) {
+            try {
+                double num = Double.parseDouble(currentNumber.toString());
+                double result = logic.factorial(num);
+                expressionDisplay.setText(formatResult(num) + "! =");
+                display.setText(formatResult(result));
+                currentNumber.setLength(0);
+                currentNumber.append(formatResult(result));
+                isNewNumber = true;
+            } catch (ArithmeticException e) {
+                isErrorState = true;
+                display.setForeground(Color.RED);
+                display.setText("Invalid input for n!");
+                expressionDisplay.setText("");
+            }
         }
     }
 
