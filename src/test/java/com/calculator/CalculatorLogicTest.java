@@ -91,5 +91,34 @@ public class CalculatorLogicTest {
     public void testFactorialNonInteger() {
         calculator.factorial(3.5);
     }
+
+    @Test
+    public void testNaturalLog() {
+        assertEquals(0.0, calculator.naturalLog(1.0), 0.001);
+        assertEquals(1.0, calculator.naturalLog(Math.E), 0.001);
+        assertEquals(2.302585, calculator.naturalLog(10.0), 0.001);
+        assertEquals(0.693147, calculator.naturalLog(2.0), 0.001);
+    }
+
+    @Test(expected = ArithmeticException.class)
+    public void testNaturalLogZero() {
+        calculator.naturalLog(0.0);
+    }
+
+    @Test(expected = ArithmeticException.class)
+    public void testNaturalLogNegative() {
+        calculator.naturalLog(-5.0);
+    }
+
+    @Test
+    public void testPower() {
+        assertEquals(8.0, calculator.power(2.0, 3.0), 0.001);
+        assertEquals(1.0, calculator.power(5.0, 0.0), 0.001);
+        assertEquals(25.0, calculator.power(5.0, 2.0), 0.001);
+        assertEquals(0.25, calculator.power(2.0, -2.0), 0.001);
+        assertEquals(2.0, calculator.power(4.0, 0.5), 0.001);
+        assertEquals(-8.0, calculator.power(-2.0, 3.0), 0.001);
+        assertEquals(4.0, calculator.power(-2.0, 2.0), 0.001);
+    }
 }
 

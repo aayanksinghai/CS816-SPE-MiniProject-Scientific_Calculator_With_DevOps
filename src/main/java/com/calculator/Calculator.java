@@ -33,7 +33,7 @@ public class Calculator extends JFrame implements ActionListener {
 
     public Calculator() {
         setTitle("Modern Calculator");
-        setSize(350, 480);
+        setSize(350, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
         setLocationRelativeTo(null);
@@ -63,7 +63,7 @@ public class Calculator extends JFrame implements ActionListener {
         add(displayPanel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(5, 4, 8, 8));
+        buttonPanel.setLayout(new GridLayout(6, 4, 8, 8));
         buttonPanel.setBackground(BACKGROUND_COLOR);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -72,7 +72,8 @@ public class Calculator extends JFrame implements ActionListener {
             "7", "8", "9", "-",
             "4", "5", "6", "+",
             "1", "2", "3", "=",
-            "0", ".", "√", "n!"
+            "0", ".", "√", "n!",
+            "ln", "xʸ"
         };
 
         for (String label : buttonLabels) {
@@ -103,7 +104,7 @@ public class Calculator extends JFrame implements ActionListener {
             button.setBackground(BUTTON_COLOR);
         } else if (label.equals("C")) {
             button.setBackground(CLEAR_COLOR);
-        } else if (label.equals("√") || label.equals("n!")) {
+        } else if (label.equals("√") || label.equals("n!") || label.equals("ln") || label.equals("xʸ")) {
             button.setBackground(SCIENTIFIC_COLOR);
         } else {
             button.setBackground(BUTTON_COLOR);
@@ -121,7 +122,7 @@ public class Calculator extends JFrame implements ActionListener {
                     button.setBackground(OPERATOR_COLOR);
                 } else if (label.equals("C")) {
                     button.setBackground(CLEAR_COLOR);
-                } else if (label.equals("√") || label.equals("n!")) {
+                } else if (label.equals("√") || label.equals("n!") || label.equals("ln") || label.equals("xʸ")) {
                     button.setBackground(SCIENTIFIC_COLOR);
                 } else {
                     button.setBackground(BUTTON_COLOR);
@@ -172,6 +173,10 @@ public class Calculator extends JFrame implements ActionListener {
             handleSquareRoot();
         } else if (command.equals("n!")) {
             handleFactorial();
+        } else if (command.equals("ln")) {
+            handleNaturalLog();
+        } else if (command.equals("xʸ")) {
+            handlePowerOperator();
         } else if (command.equals("=")) {
             if (!operator.isEmpty() && currentNumber.length() > 0) {
                 secondNumber = Double.parseDouble(currentNumber.toString());
@@ -271,6 +276,38 @@ public class Calculator extends JFrame implements ActionListener {
         }
     }
 
+    private void handleNaturalLog() {
+        if (currentNumber.length() > 0) {
+            try {
+                double num = Double.parseDouble(currentNumber.toString());
+                double result = logic.naturalLog(num);
+                expressionDisplay.setText("ln(" + formatResult(num) + ") =");
+                display.setText(formatResult(result));
+                currentNumber.setLength(0);
+                currentNumber.append(formatResult(result));
+                isNewNumber = true;
+            } catch (ArithmeticException e) {
+                isErrorState = true;
+                display.setForeground(Color.RED);
+                display.setText("Invalid input for ln");
+                expressionDisplay.setText("");
+            }
+        }
+    }
+
+    private void handlePowerOperator() {
+        // xʸ works like an operator - first number ^ second number
+        if (currentNumber.length() > 0 && !currentNumber.toString().equals("-")) {
+            firstNumber = Double.parseDouble(currentNumber.toString());
+            operator = "^";
+            isNewNumber = true;
+            currentNumber.setLength(0);
+            expression.setLength(0);
+            expression.append(formatResult(firstNumber)).append(" ^ ");
+            expressionDisplay.setText(expression.toString());
+        }
+    }
+
     private void handleBackspace() {
         if (currentNumber.length() > 0) {
             // Remove last character from current number
@@ -309,6 +346,8 @@ public class Calculator extends JFrame implements ActionListener {
                     return logic.multiply(firstNumber, secondNumber);
                 case "/":
                     return logic.divide(firstNumber, secondNumber);
+                case "^":
+                    return logic.power(firstNumber, secondNumber);
                 default:
                     return 0;
             }
@@ -316,7 +355,11 @@ public class Calculator extends JFrame implements ActionListener {
             // Set error state and display error message in red
             isErrorState = true;
             display.setForeground(Color.RED);
-            display.setText("Can't divide by 0");
+            if (operator.equals("/")) {
+                display.setText("Can't divide by 0");
+            } else {
+                display.setText("Math Error");
+            }
             expressionDisplay.setText("");
             return 0;
         }

@@ -53,5 +53,23 @@ public class CalculatorLogic {
         }
         return result;
     }
+
+    public double naturalLog(double a) {
+        if (a <= 0) {
+            throw new ArithmeticException("Cannot calculate ln of non-positive number");
+        }
+        return Math.log(a);
+    }
+
+    public double power(double base, double exponent) {
+        double result = Math.pow(base, exponent);
+        if (Double.isNaN(result)) {
+            throw new ArithmeticException("Invalid power operation");
+        }
+        if (Double.isInfinite(result)) {
+            throw new ArithmeticException("Result is too large");
+        }
+        return result;
+    }
 }
 
