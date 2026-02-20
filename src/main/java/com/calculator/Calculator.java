@@ -190,11 +190,24 @@ public class Calculator extends JFrame implements ActionListener {
             }
         } else {
             // Operator buttons (+, -, *, /)
-            if (currentNumber.length() > 0 || !isNewNumber) {
+            // Handle minus for negative numbers
+            if (command.equals("-") && (currentNumber.length() == 0 || currentNumber.toString().equals("-"))) {
+                // If no number entered yet (at start or after operator), treat minus as negative sign
+                if (isNewNumber || currentNumber.length() == 0) {
+                    currentNumber.setLength(0);
+                    currentNumber.append("-");
+                    display.setText(currentNumber.toString());
+                    isNewNumber = false;
+                    return;
+                }
+            }
+
+            if (currentNumber.length() > 0 && !currentNumber.toString().equals("-")) {
                 if (!operator.isEmpty() && !isNewNumber) {
                     // Chain calculations
                     secondNumber = Double.parseDouble(currentNumber.toString());
                     double result = calculate();
+                    if (isErrorState) return; // Don't continue if division by zero occurred
                     firstNumber = result;
                     display.setText(formatResult(result));
                 } else {
