@@ -1,6 +1,6 @@
 # Java Calculator Application
 
-A simple Java-based GUI calculator application with basic arithmetic operations and JUnit test cases.
+A simple Java-based GUI calculator application with scientific arithmetic operations and JUnit test cases.
 
 ## Features
 
