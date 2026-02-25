@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE_NAME = 'scientific-calculator'
-        GITHUB_REPO_URL = 'https://github.com/aayanksinghai/CS816-SPE-MiniProject-Scientific_Calculator_With_DevOps'
+        GITHUB_REPO_URL = 'https://github.com/aayanksinghai/CS816-SPE-MiniProject-Scientific_Calculator_With_Dev'
         DOCKER_HUB_USERNAME = 'aayanksinghai'
         EMAIL_RECIPIENT = 'aayanksinghai02@gmail.com'
     }
