@@ -64,40 +64,39 @@ pipeline {
     post {
         failure {
             script {
-                emailext(
-                    subject: "BUILD FAILED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                    body: '''
-                        <h2 style="color: red;">Build Failed!</h2>
-                        <p><strong>Project:</strong> ${ENV, var="JOB_NAME"}</p>
-                        <p><strong>Build Number:</strong> ${ENV, var="BUILD_NUMBER"}</p>
-                        <p><strong>Build URL:</strong> <a href="${ENV, var="BUILD_URL"}">${ENV, var="BUILD_URL"}</a></p>
-                        <p><strong>Console Output:</strong> <a href="${ENV, var="BUILD_URL"}console">${ENV, var="BUILD_URL"}console</a></p>
-                        <br/>
-                        <p>Please check the console output to investigate the failure.</p>
-                    ''',
-                    to: "${EMAIL_RECIPIENT}",
-                    mimeType: 'text/html',
-                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
-                )
+                echo "Attempting to send failure email to: ${EMAIL_RECIPIENT}"
+                mail to: "${EMAIL_RECIPIENT}",
+                     subject: "BUILD FAILED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                     body: """
+Build Failed!
+
+Project: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Build URL: ${env.BUILD_URL}
+Console Output: ${env.BUILD_URL}console
+
+Please check the console output to investigate the failure.
+                     """
+                echo "Email sent successfully"
             }
         }
         fixed {
             script {
-                emailext(
-                    subject: "BUILD FIXED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                    body: '''
-                        <h2 style="color: green;">Build Fixed!</h2>
-                        <p>The build is back to normal.</p>
-                        <p><strong>Project:</strong> ${ENV, var="JOB_NAME"}</p>
-                        <p><strong>Build Number:</strong> ${ENV, var="BUILD_NUMBER"}</p>
-                        <p><strong>Build URL:</strong> <a href="${ENV, var="BUILD_URL"}">${ENV, var="BUILD_URL"}</a></p>
-                        <br/>
-                        <p>The previous build failure has been resolved.</p>
-                    ''',
-                    to: "${EMAIL_RECIPIENT}",
-                    mimeType: 'text/html',
-                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
-                )
+                echo "Attempting to send fixed email to: ${EMAIL_RECIPIENT}"
+                mail to: "${EMAIL_RECIPIENT}",
+                     subject: "BUILD FIXED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                     body: """
+Build Fixed!
+
+The build is back to normal.
+
+Project: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Build URL: ${env.BUILD_URL}
+
+The previous build failure has been resolved.
+                     """
+                echo "Email sent successfully"
             }
         }
     }
