@@ -12,7 +12,7 @@
       ignore_errors: true
 
     - name: Run calculator container (detached)
-      shell: docker run -dit --name scientific-calculator --restart unless-stopped aayanksinghai/scientific-calculator:latest
+      shell: docker run -d -p 8081:8080 --name scientific-calculator --restart unless-stopped aayanksinghai/scientific-calculator:latest
       register: container_output
 
     - name: Display container status
