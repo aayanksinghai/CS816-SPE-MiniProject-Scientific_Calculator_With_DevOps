@@ -32,7 +32,7 @@ A modern Java-based GUI scientific calculator application featuring a sleek UI d
   - Natural Logarithm (ln)
   - Power Function (xʸ)
 - **Negative Number Support**: The minus (-) button handles both subtraction and negative number input
-- **Error Handling**: 
+- **Error Handling**:
   - Division by zero displays "Can't divide by 0" in red
   - Invalid inputs for scientific functions show appropriate error messages
   - Error state requires pressing "C" to clear and continue
