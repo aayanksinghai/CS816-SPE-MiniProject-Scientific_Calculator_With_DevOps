@@ -72,7 +72,7 @@ CS816-SPE-MiniProject-Scientific_Calculator_With_DevOps/
 ├── Dockerfile                                    # Docker configuration
 ├── Jenkinsfile                                   # CI/CD pipeline definition
 ├── deploy.yml                                    # Ansible deployment playbook
-├── inventory                                     # Ansible inventory file
+├── inventory.ini                                 # Ansible inventory file
 ├── pom.xml                                       # Maven build configuration
 ├── README.md                                     # Project documentation
 └── LICENSE                                       # License file
@@ -160,13 +160,13 @@ docker pull aayanksinghai/scientific-calculator:latest
 
 **Run the container:**
 ```bash
-docker run -d -p 8080:8080 --name scientific-calculator aayanksinghai/scientific-calculator:latest
+docker run -d -p 8081:8080 --name scientific-calculator aayanksinghai/scientific-calculator:latest
 ```
 
 **Access the calculator:**
 Open your web browser and navigate to:
 ```
-http://localhost:8080/vnc.html
+http://localhost:8081/vnc.html
 ```
 Click "Connect" to view and interact with the calculator.
 
@@ -184,26 +184,26 @@ Click "Connect" to view and interact with the calculator.
 
 3. **Run the container:**
    ```bash
-   docker run -d -p 8080:8080 --name scientific-calculator scientific-calculator
+   docker run -d -p 8081:8080 --name scientific-calculator scientific-calculator
    ```
 
 4. **Access the calculator:**
    ```
-   http://localhost:8080/vnc.html
+   http://localhost:8081/vnc.html
    ```
 
 ### Docker Commands Reference
 
-| Command | Description |
-|---------|-------------|
-| `docker pull aayanksinghai/scientific-calculator:latest` | Pull the latest image |
-| `docker run -d -p 8080:8080 --name calc aayanksinghai/scientific-calculator:latest` | Run container in background |
-| `docker ps` | List running containers |
-| `docker stop scientific-calculator` | Stop the container |
-| `docker start scientific-calculator` | Start a stopped container |
-| `docker rm scientific-calculator` | Remove the container |
-| `docker logs scientific-calculator` | View container logs |
-| `docker exec -it scientific-calculator bash` | Access container shell |
+| Command                                                                             | Description |
+|-------------------------------------------------------------------------------------|-------------|
+| `docker pull aayanksinghai/scientific-calculator:latest`                            | Pull the latest image |
+| `docker run -d -p 8081:8080 --name calc aayanksinghai/scientific-calculator:latest` | Run container in background |
+| `docker ps`                                                                         | List running containers |
+| `docker stop scientific-calculator`                                                 | Stop the container |
+| `docker start scientific-calculator`                                                | Start a stopped container |
+| `docker rm scientific-calculator`                                                   | Remove the container |
+| `docker logs scientific-calculator`                                                 | View container logs |
+| `docker exec -it scientific-calculator bash`                                        | Access container shell |
 
 ### Docker Architecture
 
