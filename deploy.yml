@@ -1,26 +1,20 @@
 ---
 - name: Deploy Calculator App with Docker
-  hosts: webserver
+  hosts: webservers
+
   tasks:
-    - name: Install Docker
-      apt:
-        name: docker.io
-        state: present
-
     - name: Pull the latest Docker image
-      community.docker.docker_image:
-        name: aayanksinghai/scientific-calculator:latest
-        source: pull
+      shell: docker pull aayanksinghai/scientific-calculator:latest
+      register: pull_result
 
-    - name: Stop and remove existing container (if any)
-      community.docker.docker_container:
-        name: scientific-calculator
-        state: absent
+    - name: Stop and remove existing container
+      shell: docker rm -f scientific-calculator
+      ignore_errors: true
 
-    - name: Run new container
-      community.docker.docker_container:
-        name: scientific-calculator
-        image: aayanksinghai/scientific-calculator:latest
-        state: started
-        restart_policy: always
-        interactive: true
+    - name: Run calculator container (detached)
+      shell: docker run -dit --name scientific-calculator --restart unless-stopped aayanksinghai/scientific-calculator:latest
+      register: container_output
+
+    - name: Display container status
+      shell: docker ps -f "name=scientific-calculator"
+      register: container_status
