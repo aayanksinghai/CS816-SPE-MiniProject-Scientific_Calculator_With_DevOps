@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
  * Main Calculator GUI class with modern UI design.
  */
 public class Calculator extends JFrame implements ActionListener {
+    //Test 
     private JTextField display;
     private JLabel expressionDisplay;
     private double firstNumber = 0;
