@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
  */
 public class Calculator extends JFrame implements ActionListener {
     //Test Comment
-    private JTextField display;
+    private JTextFeld display; //deliberate wrong
     private JLabel expressionDisplay;
     private double firstNumber = 0;
     private double secondNumber = 0;
